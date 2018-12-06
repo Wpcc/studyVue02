@@ -1,9 +1,48 @@
 ## Vue 的深入学习
 主要涉及到项目中的组件开发，以及 vue 浅显的源码分析。该章节建立在 vue-cli3.0 工具，以及 vue-router 和 vuex 工具上。
 
+[cli3.0视频学习地址](https://ke.qq.com/course/323614)
+
+
+
+### 0.0.目录说明
+
+- cli-plugin
+  - vue.config.js配置
+    - 通过vue.config.js中的配置，可以有选择的定义入口文件，即`main.js`文件
+- demo01
+  - src
+    - 组件在模块中的传参
+  - src02
+    - 通过`axios` 进行ajax访问
+  - src03
+    - Pubsub 组件传参
+
+- demo02
+  - url
+    - 组件传参案例
+  - url02
+    - webStorage封装后的组件传参案例
+
+```javascript
+/*
+如果要调整项目的入口文件也就是main.js的话，在cli3.0中需要通过vue.config.js
+*/
+const path = require('path')
+module.exports = {
+    configureWebpack: {
+        entry: path.join(__dirname, <项目入口地址：如'src/main.js'>)
+    }
+}
+```
+
+
+
 ### 1.0.vue-cli3.0
 
 vue-cli 从2.0版本升级到3.0版本，这之间发生了不少的变化，以下会详细介绍 vue-cli3.0 更新内容：
+
+
 
 #### 1.1.安装
 
@@ -168,3 +207,141 @@ npm i -g serve
 # 这个模式会处理即将提到的路由问题
 serve -s dist
 ```
+
+
+
+#### 1.4.配置文件
+
+在 cli3.0 中由于对webpack基本配置做了封装，以致于很多配置项都无法再通过 webpack.config.js 文件进行配置。
+
+不过通过 vue.config.js 对外提供的 API 依旧可以对文件进行简单配置，这是因为如果 vue.config.js 和 package.json 同级的话，那么它会被 @vue/cli-service 自动加载。
+
+[官方文档](https://cli.vuejs.org/zh/config/#vue-config-js)对此有更加详细地说明。
+
+以下是对 vue.config.js 配置项的基本解释说明：
+
+```javascript
+module.exports = {
+ // 基本路径
+ baseUrl: '/',
+ // 输出文件目录
+ outputDir: 'dist',
+ // eslint-loader 是否在保存的时候检查
+ lintOnSave: true,
+ // use the full build with in-browser compiler?
+ // https://vuejs.org/v2/guide/installation.html#Runtime-Compiler-vs-Runtime-only
+ compiler: false,
+ // webpack配置
+ // see https://github.com/vuejs/vue-cli/blob/dev/docs/webpack.md
+ chainWebpack: () => {},
+ configureWebpack: () => {},
+ // vue-loader 配置项
+ // https://vue-loader.vuejs.org/en/options.html
+ vueLoader: {},
+ // 生产环境是否生成 sourceMap 文件
+ productionSourceMap: true,
+ // css相关配置
+ css: {
+  // 是否使用css分离插件 ExtractTextPlugin
+  extract: true,
+  // 开启 CSS source maps?
+  sourceMap: false,
+  // css预设器配置项
+  loaderOptions: {},
+  // 启用 CSS modules for all css / pre-processor files.
+  modules: false
+ },
+ // use thread-loader for babel & TS in production build
+ // enabled by default if the machine has more than 1 cores
+ parallel: require('os').cpus().length > 1,
+ // 是否启用dll
+ // See https://github.com/vuejs/vue-cli/blob/dev/docs/cli-service.md#dll-mode
+ dll: false,
+ // PWA 插件相关配置
+ // see https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-pwa
+ pwa: {},
+ // webpack-dev-server 相关配置
+ devServer: {
+  open: process.platform === 'darwin',
+  host: '0.0.0.0',
+  port: 8080,
+  https: false,
+  hotOnly: false,
+  proxy: null, // 设置代理
+  before: app => {}
+ },
+ // 第三方插件配置
+ pluginOptions: {
+  // ...
+ }
+}
+```
+
+
+
+#### 1.5.全局变量
+
+在整个项目中，当我们生成一个 .env 文件，在该文件中定义的变量，通过 `process.env.<变量名>`可以直接获取。
+
+关于全局变量的定义，cli3.0 提供三个文件，分别是：
+
+- 基础全局变量定义文件 .env
+- 开发全局变量定义文件 .env.development
+- 生成全局变量定义文件 .env.production
+
+cli3.0 的工作方式，如果项目中同时定义了以上三个文件的话，那么会通过项目环境来确定到底调用哪个文件里的内容。
+
+关于 .env 文件中的代码使用，具体如下：
+
+```javascript
+// .env
+VUE_APP_URL = 'www.baidu.com'
+```
+
+```vue
+<!-- 在App.vue中使用，需要通过data定义 -->
+<script>
+    export default {
+        data(){
+            return{
+                url: process.env.VUE_APP_URL
+            }
+        }
+    }
+</script>
+```
+
+
+
+
+
+### 2.0.组件传参
+
+在浏览器中已经学过基本的组件传参，如 props 和 $emit(自定义事件)，不过在大型项目中，依旧解决不了复杂的数据传递问题。
+
+
+
+#### 2.1.pubsub
+
+pub：publish（发布），sub：subscribe（订阅）。这里其实设计到项目构建中的设计模式，该模块通过发布订阅这种模式来引导数据在组件之间的传递。
+
+发布订阅模式：
+
+其实说白了也就类似于 js 最初的函数定义和触发函数，即订阅相当于定义函数，而发布则相当于触发函数。
+
+具体代码：
+
+```javascript
+var Pubsub from 'pubsub-js'
+// 订阅：实际上通过subcribe在Pubsub上定义一个回调函数，命名为my_topic
+Pubsub.subcribe('my_topic', function(msg, data){
+    console.log(msg, data)
+})
+
+//发布:通过publish触发定义在Pubsub上的回调函数，并传入数据
+Pubsub.publish('my_topic', 'hello world!')
+```
+
+需要说明地是，订阅消息一般都放在组件的生命周期内，如 mounted。
+
+通过[官方文档](https://www.npmjs.com/package/pubsub-js)了解更详细内容。

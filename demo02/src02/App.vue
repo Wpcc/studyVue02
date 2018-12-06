@@ -17,9 +17,9 @@ import Footer from './components/Footer.vue'
 import storageUtil from './util/storageUtil'
 
 export default {
-  data(){
+  data () {
     return {
-      todos:storageUtil.readTodos()
+      todos: storageUtil.readTodos()
     }
   },
   components: {
@@ -27,22 +27,22 @@ export default {
     List,
     Footer
   },
-  methods:{
-    addTodo(val){
+  methods: {
+    addTodo (val){
       this.todos.unshift(val)
     },
-    deleteSelected(){
+    deleteSelected () {
       this.todos = this.todos.filter(item => item.complete === false)
     },
-    selectAll(val){
+    selectAll (val) {
       // 由于数组中的数据为对象，故能够通过forEach直接修改其中的值
       this.todos.forEach(item => item.complete = val)
     }
   },
-  watch:{
-    todos:{
-      handler:storageUtil.writeTodos,
-      deep:true
+  watch: {
+    todos: {
+      handler: storageUtil.writeTodos,
+      deep: true
     }
   }
 }
