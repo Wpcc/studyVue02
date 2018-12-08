@@ -11,18 +11,20 @@
   - vue.config.js配置
     - 通过vue.config.js中的配置，可以有选择的定义入口文件，即`main.js`文件
 - demo01
-  - src
-    - 组件在模块中的传参
-  - src02
-    - 通过`axios` 进行ajax访问
-  - src03
-    - Pubsub 组件传参
-
+  - src：组件在模块中的传参
+  - src02：通过`axios` 进行ajax访问
+  - src03：Pubsub 组件传参
 - demo02
-  - url
-    - 组件传参案例
-  - url02
-    - webStorage封装后的组件传参案例
+  - url：组件传参案例
+  - url02：webStorage封装后的组件传参案例
+- demo03
+  - 路由
+- demo04
+  - src：vuex 将数据挂载在data上
+  - src02：vuex 将数据挂载在data上，需要通过watch监听才能更新数据改变
+  - src03：真实的vuex 是将数据挂载在computed
+  - src04：vuex管理状态实例演示
+  - src05：通过mapState，mapActions，mapGetters 简化在组件中的数据、方法引用
 
 ```javascript
 /*
@@ -345,3 +347,309 @@ Pubsub.publish('my_topic', 'hello world!')
 需要说明地是，订阅消息一般都放在组件的生命周期内，如 mounted。
 
 通过[官方文档](https://www.npmjs.com/package/pubsub-js)了解更详细内容。
+
+
+
+### 3.0. UI组件库
+
+
+
+#### 3.1. Mint UI
+
+[官网](http://mint-ui.github.io/#!/zh-cn)
+
+简要说明：饿了么开源的基于 vue 的移动端 UI 组件库
+
+#### 3.2. Element
+
+[官网](http://element-cn.eleme.io/#/zh-CN)
+
+简要说明：饿了么开源的基于 vue 的 PC 端 UI 组件库
+
+
+
+### 4.0.路由
+
+#### 4.1.基本用法
+
+#### 4.2.子路由
+
+#### 4.3.缓存路由
+
+如果在一个组件中的input输入内容，当用路由切换组件，该内容会消失。也就是路由的切换其实是重新创建一个组件。
+
+通过以下代码可以保证组件的原有内容：
+
+```vue
+<keep-alive>
+	<router-view></router-view>
+</keep-alive>
+```
+
+#### 4.4.数据传递
+
+- 通过 url 链接，这种方式可以在 vm 实例中的 $route 中得到
+  - params
+
+  ```html
+  <!-- 以浏览器形式来显示 -->
+  <div id="app">
+      <route-link to="/show/1">1</route-link>
+      <route-link to="/show/2">2</route-link>
+      <route-link to="/show/3">3</route-link>
+  </div>
+  <template id='myTemplate'>
+  	<div>
+          id:{{id}}
+      </div>
+  </template>
+  <script>
+      var comp  = {
+          template:'#myTemplate',
+          data () {
+              return {
+                  id: this.$route.params.id
+              }
+          }
+      }
+      var router = new VueRouter({
+          routes:[
+              {
+                  path: '/show/:id', component: comp
+              }
+          ]
+      })
+      var vm = new Vue({
+         
+      })
+  </script>
+  ```
+
+  - query
+
+
+
+- 通过组件名也就是 `<router-view>`,之后在组件中的props中可以拿到
+
+### 5.0.VueX
+
+#### 1.0.数据流
+
+- 双向的数据流
+
+  在 vue 中通过 v-model 来进行双向数据绑定，也就是说当视图层去更新数据层的时候，数据层同时也更新了视图层。
+
+  双向数据流的原理是通过 js 中的 defineProperty 来定义的。
+
+  ```html
+  <div id="app">
+      <input type='text' id='a'/>
+      <p id='b'></p>
+  </div>
+  <script>
+  // 模拟双向数据流
+  var vue = {}
+  vue.definePropery('data', {
+      set: function(newValue){
+          document.querySelector('#b').innerHTML = newValue
+          document.querySelector('#a').value = newValue
+      }
+  })
+  document.querySelector('#a').addEventListener('keyup',function(){
+  	vue.data = this.value        
+  })
+  </script>
+  ```
+
+- 单向数据流
+
+  在 vue 中通常通过单向数据流来进行数据与页面之间的交互。也就是通过 view => actions => model =>view
+
+  整个体系呈现出一个循环的环形结构。
+
+  **需要详细说明地是，数据的双向绑定是发生在单向数据流中的 model 与 view 之间，也就是单向数据流本身是包括双向绑定，而不是两者为对应关系。**
+
+  [官方文档](https://vuex.vuejs.org/zh/) 
+
+#### 2.0.基本概念
+
+通过单向数据流，可以知道各部件之间的流向。在模块化开发中，数据与数据操作一旦涉及到多层组件往往会显得异常繁杂，比如a>b>c, b>d>e, c>f>g。如果要在e和g之间传递数据，那么数据的传递必定是层层递套关系。为了简化组件之间的传递，从而但是了VueX。
+
+- VueX 其实是将数据之间的传递抽离出来，放在一个 store 容器中。
+  - 比如将数据抽离放在 states 中
+  - 将actions抽离放在 mutations 中
+
+- 当然由于 VueX 是插件，自然而然也就少不了插件使用的流程。
+
+```javascript
+// 模块化开发中的 main.js
+const Vue from 'vue'
+const App from 'App.vue'
+const store from 'store'
+
+new Vue({
+   	store,
+    render: h => h(App)
+}).$mount('#app')
+/*
+当将store挂载到vm实例上，vm可以通过$store方法访问Vuex.Store生成的管理对象
+*/
+
+```
+
+```javascript
+// store.js
+const Vue from 'vue'
+const VueX from 'vuex'
+Vue.use(VueX)
+
+export defaulf new VueX.Store({
+    state: {
+        msg: 'hello'
+    },
+    mutations: {
+    // 所有mutations中的方法，都会默认传递一个state对象
+        change(state){
+            state.msg = 'world'
+        }
+    }
+})
+```
+
+```vue
+<!-- App.vue -->
+<template>
+	<div id="app">
+        <button @click="change">change</button>
+    </div>
+</template>
+<script>
+    export default {
+        computed : {
+            msg () {
+                return this.$store.state
+            }
+        },
+        methods: {
+            change(){
+                this.$store.emit('change')
+            }
+        }
+    }
+</script>
+```
+
+需要注意地是 store 的数据是挂载 computed 上 而不是 data 。
+
+
+
+#### 3.0.完整实例
+
+真实的vuex并不会直接触发mutations，而是通过触发actions去触发mutations。之所以这样，是因为mutations并不支持异步，这是因为devtool对mutations存在状态记录，从而不允许异步操作的进行。
+
+```javascript
+// 模块化开发中的 main.js
+const Vue from 'vue'
+const App from 'App.vue'
+const store from 'store'
+
+new Vue({
+   	store,
+    render: h => h(App)
+}).$mount('#app')
+/*
+当将store挂载到vm实例上，vm可以通过$store方法访问Vuex.Store生成的管理对象
+*/
+
+```
+
+```javascript
+// store.js
+const Vue from 'vue'
+const VueX from 'vuex'
+Vue.use(VueX)
+
+export defaulf new VueX.Store({
+    state: {
+        msg: 'hello'
+    },
+    mutations: {
+    // 所有mutations中的方法，都会默认传递一个state对象
+        change(state){
+            state.msg = 'world'
+        }
+    },
+    actions: {
+        change(context){
+            context.commit('change')
+        }
+    }
+})
+```
+
+```vue
+<!-- App.vue -->
+<template>
+	<div id="app">
+        <button @click="change">change</button>
+    </div>
+</template>
+<script>
+    export default {
+        computed : {
+            msg () {
+                return this.$store.state
+            }
+        },
+        methods: {
+            change(){
+                // action的触发是通过 dispatch
+                this.$store.dispatch('change')
+            }
+        }
+    }
+</script>
+```
+
+#### 4.0.镜像辅助函数简化
+
+通过 mapState , mapGetters , mapActions 可以进行更加简单的开发。故以上 app.vue 实例可以改写成如下内容：
+
+```vue
+<!-- App.vue -->
+<template>
+	<div id="app">
+        <button @click="change">change</button>
+    </div>
+</template>
+<script>
+    import {mapState} from './store'
+    export default {
+        computed : {
+            ...mapState(['msg'])
+            /*
+            通过ES7中的对象解构操作符，实际上内容等于以下内容：
+            msg () {
+                return this.$store.state
+            }
+            */
+        },
+        methods: {
+            ...mapActions(['change'])
+            /*
+            change(){
+                通过ES7中的对象解构操作符，实际上内容等于以下内容：
+                this.$store.dispatch('change')
+            }
+            */
+        }
+    }
+</script>
+```
+
+ #### 5.0.总结
+
+![vuex](C:\Users\Administrator\Desktop\studyVue02\readme\vuex.png)
+
+需要补充的是 4.0 章节，也就是除了 dispatch 去触发 Actions ， 其实也可以通过 map 这种镜像对象的方式与 vuex 进行通讯。
+
