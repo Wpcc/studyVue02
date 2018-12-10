@@ -46,7 +46,7 @@ vue-cli 从2.0版本升级到3.0版本，这之间发生了不少的变化，以
 
 
 
-#### 1.1.安装
+#### 基本使用
 
 命令语句如下：
 
@@ -154,7 +154,27 @@ Save this as a preset for future projects? (y/N)
 
 当一切选择完毕之后，vue 脚手架会将选择安装的配置下载到本地，同时自动配置好选择的配置文件。也就是一些基础的 webpack 配置在3.0版本的时候已经集成到node_modules 中的 @vue 文件夹中，并不暴露在外部让我们修改。
 
-#### 1.2.插件使用
+
+
+#### 文件说明
+
+```javascript
+// main.js
+Vue.config.productionTip = flase
+
+/*
+	在main.js中新增关于vue配置生成的建议默认为false，这样会自动取消浏览器中 Console里面的如下提示：
+	You are running Vue in development mode.
+	Make sure to turn on production mode when deploying for 		production.
+	See more tips at https://vuejs.org/guide/deployment.html
+*/
+```
+
+
+
+
+
+#### 插件使用
 
 在 vue-cli3.0 中，可以通过 CLI 来安装插件，这和直接用 `npm install <插件名如 | axios>`是有区别的。
 
@@ -170,7 +190,7 @@ vue add vuetify
 
 
 
-#### 1.3.小型服务器
+#### 小型服务器
 
 - vue-cli3.0 脚手架服务器
 
@@ -212,7 +232,7 @@ serve -s dist
 
 
 
-#### 1.4.配置文件
+#### 配置文件
 
 在 cli3.0 中由于对webpack基本配置做了封装，以致于很多配置项都无法再通过 webpack.config.js 文件进行配置。
 
@@ -281,7 +301,7 @@ module.exports = {
 
 
 
-#### 1.5.全局变量
+#### 全局变量
 
 在整个项目中，当我们生成一个 .env 文件，在该文件中定义的变量，通过 `process.env.<变量名>`可以直接获取。
 
@@ -323,7 +343,7 @@ VUE_APP_URL = 'www.baidu.com'
 
 
 
-#### 2.1.pubsub
+#### pubsub
 
 pub：publish（发布），sub：subscribe（订阅）。这里其实设计到项目构建中的设计模式，该模块通过发布订阅这种模式来引导数据在组件之间的传递。
 
@@ -350,31 +370,13 @@ Pubsub.publish('my_topic', 'hello world!')
 
 
 
-### 3.0. UI组件库
+### 3.0.路由
 
+#### 基本用法
 
+#### 子路由
 
-#### 3.1. Mint UI
-
-[官网](http://mint-ui.github.io/#!/zh-cn)
-
-简要说明：饿了么开源的基于 vue 的移动端 UI 组件库
-
-#### 3.2. Element
-
-[官网](http://element-cn.eleme.io/#/zh-CN)
-
-简要说明：饿了么开源的基于 vue 的 PC 端 UI 组件库
-
-
-
-### 4.0.路由
-
-#### 4.1.基本用法
-
-#### 4.2.子路由
-
-#### 4.3.缓存路由
+#### 缓存路由
 
 如果在一个组件中的input输入内容，当用路由切换组件，该内容会消失。也就是路由的切换其实是重新创建一个组件。
 
@@ -386,7 +388,7 @@ Pubsub.publish('my_topic', 'hello world!')
 </keep-alive>
 ```
 
-#### 4.4.数据传递
+#### 数据传递
 
 - 通过 url 链接，这种方式可以在 vm 实例中的 $route 中得到
   - params
@@ -431,9 +433,9 @@ Pubsub.publish('my_topic', 'hello world!')
 
 - 通过组件名也就是 `<router-view>`,之后在组件中的props中可以拿到
 
-### 5.0.VueX
+### 4.0.VueX
 
-#### 1.0.数据流
+#### 数据流
 
 - 双向的数据流
 
@@ -471,7 +473,7 @@ Pubsub.publish('my_topic', 'hello world!')
 
   [官方文档](https://vuex.vuejs.org/zh/) 
 
-#### 2.0.基本概念
+#### 基本概念
 
 通过单向数据流，可以知道各部件之间的流向。在模块化开发中，数据与数据操作一旦涉及到多层组件往往会显得异常繁杂，比如a>b>c, b>d>e, c>f>g。如果要在e和g之间传递数据，那么数据的传递必定是层层递套关系。为了简化组件之间的传递，从而但是了VueX。
 
@@ -543,7 +545,7 @@ export defaulf new VueX.Store({
 
 
 
-#### 3.0.完整实例
+#### 完整实例
 
 真实的vuex并不会直接触发mutations，而是通过触发actions去触发mutations。之所以这样，是因为mutations并不支持异步，这是因为devtool对mutations存在状态记录，从而不允许异步操作的进行。
 
@@ -611,7 +613,7 @@ export defaulf new VueX.Store({
 </script>
 ```
 
-#### 4.0.镜像辅助函数简化
+#### 镜像辅助函数简化
 
 通过 mapState , mapGetters , mapActions 可以进行更加简单的开发。故以上 app.vue 实例可以改写成如下内容：
 
@@ -647,9 +649,120 @@ export defaulf new VueX.Store({
 </script>
 ```
 
- #### 5.0.总结
+ #### 总结
 
-![vuex](C:\Users\Administrator\Desktop\studyVue02\readme\vuex.png)
+![vuex](.\readme\vuex.png)
 
 需要补充的是 4.0 章节，也就是除了 dispatch 去触发 Actions ， 其实也可以通过 map 这种镜像对象的方式与 vuex 进行通讯。
 
+![vuex](.\readme\vuex02.png)
+
+
+
+### 5.0.框架及组件
+
+#### Weex
+
+**Weex 是一个使用 Web 开发体验来开发高性能原生应用的框架。**可以用来搭配vue进行hybrid app 开发。
+
+[官方文档](http://weex.apache.org/cn/guide/index.html)
+
+####  Mint UI
+
+[官网](http://mint-ui.github.io/#!/zh-cn)
+
+简要说明：饿了么开源的基于 vue 的移动端 UI 组件库
+
+####  Element
+
+[官网](http://element-cn.eleme.io/#/zh-CN)
+
+简要说明：饿了么开源的基于 vue 的 PC 端 UI 组件库
+
+#### Vue-Lazyload(图片懒加载)
+
+[使用说明](https://www.npmjs.com/package/vue-lazyload)
+
+原理：
+
+图片懒加载的原理基本都一样，都是先将所有的图片请求都指向一个地址，然后通过滑动显示出来的页面区域，去重新加载正确的图片路径，这样也就避免了大量的静态资源请求，从而阻塞网页显示和浪费带宽。
+
+基本使用：
+
+```javascript
+// 在main中定义
+import Vue from 'vue'
+import App from './App.vue'
+import VueLazyload from 'vue-lazyload'
+ 
+Vue.use(VueLazyload, {
+  loading: 'dist/loading.gif',
+})
+```
+
+```vue
+<!-- 
+	在模板中使用，如app.vue
+-->
+v-lazy="<图片真实路径>"
+```
+
+
+
+
+
+### 6.0.项目
+
+#### PC商城
+
+**额外知识补充：**
+
+- 静态资源
+
+​	对于静态的资源处理一般分为两种情况，如果静态资源需要webpack处理，那么则直接在src文件夹中定义。如果是图片，那么webpack会通过url-loader进行处理，具体处理细节可以通过webpack配置进行了解。
+
+​	如果静态资源不需要webpack处理，那么则放在public文件夹下，并用绝对路径引用即可。
+
+- @符号
+
+​	如果 URL 以 `@` 开头，它也会作为一个模块请求被解析。它的用处在于 Vue CLI 默认会设置一个指向 `<projectRoot>/src` 的别名 `@`。**(仅作用于模版中)**
+
+- 组件命名
+
+  具体查看vue学习第一章节。
+
+- 虚拟数据
+
+  项目中的虚拟数据一般都放在mock文件夹中，并且需要进行额外的路由配置。在vueCLI2.0中通过暴露出来的`webpack.config.js`文件进行配置，但是在vueCLI3.0中由于对`webpack.config.js`进行了封装，故只能通过`vue.config.js`进行配置。
+
+  ```javascript
+  // vue.config.js
+  const mockData = require('./mock/productsList.json')
+  module.exports = {
+    lintOnSave: false,
+    devServer: {
+      before(app){
+        app.get('/api/list', (req, res) => {
+          res.json(mockData)
+        })
+      }
+    }
+  }
+  /*
+  其实说白了就是对devServer中node搭配的后台路由进行配置
+  */
+  ```
+
+- 图片懒加载
+
+  通过下载vue-lazyload去实现
+
+---
+
+**项目构建说明：**
+
+goodsList页面：
+
+- 价格区间的切换主要通过点击事件去更改目标元素的`cur`类
+- 当页面适用移动端后，价格区间是隐藏的，需要通过点击事件去给价格区间添加`filterby-show`类，同时给整个元素添加遮罩层，遮罩层的类为`md-overlay`通过v-show进行显示 和隐藏。
+- 通过插件`vue-lazyload`实现图片懒加载
