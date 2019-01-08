@@ -303,6 +303,8 @@ module.exports = {
 
 #### 全局变量
 
+[文档](https://cli.vuejs.org/zh/guide/mode-and-env.html#%E6%A8%A1%E5%BC%8F)
+
 在整个项目中，当我们生成一个 .env 文件，在该文件中定义的变量，通过 `process.env.<变量名>`可以直接获取。
 
 关于全局变量的定义，cli3.0 提供三个文件，分别是：
@@ -755,7 +757,7 @@ v-lazy="<图片真实路径>"
 
 - 图片懒加载
 
-  通过下载vue-lazyload去实现
+  通过下载vue-lazyload去实现，具体原理参考第五章节。
 
 ---
 
@@ -764,5 +766,84 @@ v-lazy="<图片真实路径>"
 goodsList页面：
 
 - 价格区间的切换主要通过点击事件去更改目标元素的`cur`类
+
 - 当页面适用移动端后，价格区间是隐藏的，需要通过点击事件去给价格区间添加`filterby-show`类，同时给整个元素添加遮罩层，遮罩层的类为`md-overlay`通过v-show进行显示 和隐藏。
+
 - 通过插件`vue-lazyload`实现图片懒加载
+
+
+后台数据：
+
+- 通过 node + mongodb + mongoose插件搭建一个服务器和数据库
+
+- 前端和后台数据之间的交互
+
+  虚拟数据：可以在 cli 构建的项目中建立一个 mock 文件夹，里面放置一些虚拟的 json 数据，通过 axios 去访问。
+
+  服务器数据：如果是自己搭建的服务器，那么在访问服务器数据的时候往往涉及到跨域，这个时候就要配置代理。
+
+  ```javascript
+  proxy: {
+      '/api':{
+          target: '<url>'
+      }
+  }	
+  ```
+
+​	具体参考[官方文档](https://cli.vuejs.org/zh/config/#devserver-proxy)
+
+
+
+- 排序和分页
+
+  排序：
+
+  通过后台实现：利用 mongoose 可以实现后台数据的排序以及分页。参数分别是 page，pageSize, sort（1是升序，0是降序）
+
+  分页：
+
+  通过 vue-infinite-scroll 进行分页加载，使用如下：
+
+  基础思想其实是利用鼠标的滚动距离，通过对该距离的监测来判断是否进行 ajax 请求，而 busy 的布尔值则表示是否进行 ajax 请求。
+
+  ```javascript
+  //在 main.js 中的 vue 基本插件引入
+  import infiniteScroll from 'vue-infinite-scroll'
+  Vue.use(infiniteScrll)
+  ```
+
+  组件中使用：
+
+  ```vue
+  <！-- busy的值为布尔值，意味着当滚动的时候是否加载-->
+  <div v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10">
+    ...
+  </div>
+      
+  <script>
+  var count = 0;
+   
+  new Vue({
+    el: '#app',
+    data: {
+      data: [],
+      busy: false
+    },
+    methods: {
+      loadMore: function() {
+        // 执行 ajax 请求，并禁用后续请求，后续请求可以通过ajax得到数据，再启动请求
+        this.busy = true;
+   
+        setTimeout(() => { // 该地方的setTimeout是用来模拟ajax 请求
+          for (var i = 0, j = 10; i < j; i++) {
+            this.data.push({ name: count++ });
+          }
+          this.busy = false;
+        }, 1000);
+      }
+    }
+  });    
+  </script>
+  ```
+
+  一般在使用的时候，是将 busy 的初始值设置为 true ，然后当请求到初始数据后设置为 false ，也就意味着当请求初始值成功的时候启动插件。
