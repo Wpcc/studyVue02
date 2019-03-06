@@ -602,7 +602,7 @@ export defaulf new VueX.Store({
     export default {
         computed : {
             msg () {
-                return this.$store.state
+                return this.$store.state.msg
             }
         },
         methods: {
@@ -634,7 +634,7 @@ export defaulf new VueX.Store({
             /*
             通过ES7中的对象解构操作符，实际上内容等于以下内容：
             msg () {
-                return this.$store.state
+                return this.$store.state.msg
             }
             */
         },

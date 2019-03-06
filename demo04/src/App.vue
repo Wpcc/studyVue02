@@ -5,10 +5,13 @@
 </template>
 <script type="text/javascript">
   export default {
-    data () {
-      return {
-        msg: this.$store.state.msg
+    computed: {
+      msg () {
+        return this.$store.state.msg
       }
+    },
+    mounted () {
+      console.log(this.msg)
     }
   }
 </script>
