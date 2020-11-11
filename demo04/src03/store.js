@@ -10,7 +10,7 @@ export default new Vuex.Store({
   },
   mutations: {
     // 其实就是对应着 vue 的方法，而且每个特定的方法都会传递一个 state 参数
-    change (state) {
+    change(state) {
       state.msg = 'world'
     }
   }

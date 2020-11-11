@@ -11,14 +11,14 @@
 <script>
 import Item from './Item.vue'
 export default {
-  props:['comments'],
-  components:{
+  props: ['comments'],
+  components: {
     // 组件
     Item
   },
-  methods:{
-    del(index){
-      this.$emit('del',index)
+  methods: {
+    del (index) {
+      this.$emit('del', index)
     }
   }
 }

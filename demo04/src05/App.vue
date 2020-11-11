@@ -8,18 +8,18 @@
   </div>
 </template>
 <script type="text/javascript">
-import {mapState, mapActions, mapGetters} from 'vuex'
+import { mapState, mapActions, mapGetters } from 'vuex'
 // vuex中的数据
-  export default {
-    computed: {
-      ...mapState(['count']),
-      ...mapGetters(['evenOrOdd'])
-    },
-    methods: {
-      ...mapActions(['increment']),
-      ...mapActions(['decrement']),
-      ...mapActions(['incrementIfOdd']),
-      ...mapActions(['incrementAsync'])
-    }
+export default {
+  computed: {
+    ...mapState(['count']),
+    ...mapGetters(['evenOrOdd'])
+  },
+  methods: {
+    ...mapActions(['increment']),
+    ...mapActions(['decrement']),
+    ...mapActions(['incrementIfOdd']),
+    ...mapActions(['incrementAsync'])
   }
+}
 </script>

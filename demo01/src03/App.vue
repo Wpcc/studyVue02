@@ -10,7 +10,7 @@ import Write from './components/Write.vue'
 import Show from './components/Show.vue'
 
 export default {
-  components:{
+  components: {
     Write,
     Show
   }

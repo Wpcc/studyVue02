@@ -12,7 +12,9 @@
     - 通过vue.config.js中的配置，可以有选择的定义入口文件，即`main.js`文件
 - demo01
   - src：组件在模块中的传参
+    - 父传子（prop）、子传父（$emit）
   - src02：通过`axios` 进行ajax访问
+    - 理论上`axios`需要做封装处理
   - src03：Pubsub 组件传参
 - demo02
   - url：组件传参案例
